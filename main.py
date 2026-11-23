@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
-"""Write the 23 Nov 2026 world-news image to /output/entry.png.
+"""Copy the bundled world-news image to /output/entry.png.
 
-Deterministic, no network: copies the bundled entry.png byte-for-byte,
-so both runs write identical bytes.
+Deterministic and offline: the same bundled bytes are written on every
+run, so repeated runs produce byte-identical output.
 """
 import os
 import shutil
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-SRC = os.path.join(HERE, "entry.png")
-DST = "/output/entry.png"
+script_dir = os.path.dirname(os.path.abspath(__file__))
+source_path = os.path.join(script_dir, "entry.png")
+target_path = "/output/entry.png"
 
 os.makedirs("/output", exist_ok=True)
-shutil.copyfile(SRC, DST)
-os.chmod(DST, 0o644)
-print("wrote", DST)
+shutil.copyfile(source_path, target_path)
+os.chmod(target_path, 0o644)
+if os.path.getsize(target_path) != os.path.getsize(source_path):
+    raise RuntimeError("entry.png copy is incomplete: size mismatch")
+print("wrote", target_path)
